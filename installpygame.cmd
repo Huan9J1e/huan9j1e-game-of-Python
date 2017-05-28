@@ -1,0 +1,1 @@
+python -m pip install --user pygame-1.9.3-cp36-cp36m-win_amd64.whl
