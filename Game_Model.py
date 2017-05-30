@@ -11,7 +11,8 @@ class GameSetting():
 	   	  self.screenH=H
 	   	  self.bgcolor=color
 	   	  
-	   	  self.ship_speed=ship_speed 
+	   	  self.ship_speed=ship_speed
+	   	  self.ship_limit=3
 	   	  
 	   	  self.bullet_speed=1
 	   	  self.bullet_w=3
@@ -24,7 +25,8 @@ class GameSetting():
 	   	  
 	   	  self.alien_speed=1 
 	   	  self.alien_drop_speed=1 
-	   	  self.direction_x=1     
+	   	  self.direction_x=1  
+	   	     
 
 #
 class Ship():
@@ -41,7 +43,10 @@ class Ship():
     	  self.rect.bottom=self.screen_rect.bottom
     	  
     	  self.keep_right_moving=False 
-    	  self.keep_left_moving=False 	
+    	  self.keep_left_moving=False 
+    	  
+    def center_ship(self):
+        self.rect.centerx=self.screen_rect.centerx	
     	  
     def blitme(self):
     	  self.screen.blit(self.image,self.rect)
@@ -119,4 +124,12 @@ class Alien(Sprite):
             return True
         else:
         	  return False        
-                   	    	     	  		    
+  
+#
+class GameStatus():
+    def __init__(self,Gameset):
+        self.Gameset=Gameset
+        self.reset_status()
+        
+    def reset_status(self):
+        self.ships_left=self.Gameset.ship_limit   	     	  		    

@@ -1,4 +1,5 @@
 import sys
+from time import sleep
 
 import pygame
 
@@ -89,8 +90,61 @@ def check_fleet_edges(Gameset,aliens):
         if alien.check_edges():
             change_fleet_direction(Gameset,aliens)
             break
-            
+
 #
-def update_aliens(aliens,Gameset):
+def ship_hit(Gameset,screen,aliens,ship,bullets,status):
+    status.ships_left-=1
+    
+    aliens.empty()
+    bullets.empty()
+    
+    create_fleet(Gameset,screen,aliens,ship)
+    
+    ship.center_ship()
+    
+    sleep(0.5)
+
+#
+def check_alens_bottom(Gameset,screen,aliens,ship,bullets,status):
+    screen_rect=screen.get_rect()
+    for alien in aliens.sprites():
+        if alien.rect.bottom>=screen_rect.bottom:
+           ship_hit(Gameset,screen,aliens,ship,bullets,status)
+           break               
+#
+def update_aliens(Gameset,screen,aliens,ship,bullets,status):
     check_fleet_edges(Gameset,aliens)
-    aliens.update()                   		  	  
+    aliens.update() 
+    
+    if(pygame.sprite.spritecollideany(ship,aliens)):
+        ship_hit(Gameset,screen,aliens,ship,bullets,status)
+    
+    check_alens_bottom(Gameset,screen,aliens,ship,bullets,status)
+    
+#
+def renew_aliens(Gameset,screen,aliens,ship,bullets):
+    if(len(aliens)==0):
+       bullets.empty()
+       create_fleet(Gameset,screen,aliens,ship)
+       
+#
+def update_bullet(bullets,Gameset,screen,ship,aliens):
+    bullets.update()
+    #delete the miss bullet
+    for bullet in bullets.copy():
+	      if bullet.rect.bottom<=0:
+	  	      bullets.remove(bullet)
+	  	  #print(len(bullets))
+	  #below is to check when to new a bullet	  
+    if(Gameset.bullet_keepnew)and(Gameset.delay%100==0)and(len(bullets)<Gameset.bullet_allow):
+    	  newBullet=Bullet(Gameset,screen,ship)
+    	  bullets.add(newBullet) 
+    	  
+    check_bullet_alien_collisions(Gameset,screen,aliens,ship,bullets)
+
+#    
+def check_bullet_alien_collisions(Gameset,screen,aliens,ship,bullets):
+    #check if hit
+    collisions=pygame.sprite.groupcollide(bullets,aliens,False,True)
+    #renew the aliens
+    renew_aliens(Gameset,screen,aliens,ship,bullets)                                 		  	  
