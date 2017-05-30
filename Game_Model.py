@@ -20,7 +20,11 @@ class GameSetting():
 	   	  self.bullet_keepnew=False
 	   	  self.bullet_allow=10 
 	   	  
-	   	  self.delay=0        
+	   	  self.delay=0 
+	   	  
+	   	  self.alien_speed=1 
+	   	  self.alien_drop_speed=1 
+	   	  self.direction_x=1     
 
 #
 class Ship():
@@ -81,4 +85,38 @@ class Bullet(Sprite):
 	  def draw_bullet(self):
 	  	  pygame.draw.rect(self.screen,self.color,self.rect)  	
 	  	  
-	  	    	     	  		    
+#
+class Alien(Sprite):
+    
+    def __init__(self,Gameset,screen):
+        super(Alien,self).__init__()
+        self.screen=screen
+        self.Gameset=	Gameset; 
+        
+        self.image=pygame.image.load('image/alien.bmp')
+        self.rect=self.image.get_rect()
+        
+        self.rect.x=self.rect.width
+        self.rect.y=self.rect.height 
+        
+        self.x=float(self.rect.x)
+        
+        self.speed=1
+        self.direction_x=5
+        
+    def blitme(self):
+        self.screen.blit(self.image,self.rect)
+        
+    def update(self):
+        self.x+=self.Gameset.alien_speed*self.Gameset.direction_x          
+        self.rect.x=self.x 
+    
+    def check_edges(self):
+        screen_rect=self.screen.get_rect()
+        if(self.rect.right>=screen_rect.right):
+            return True
+        elif(self.rect.left<=0):
+            return True
+        else:
+        	  return False        
+                   	    	     	  		    
