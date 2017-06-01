@@ -23,26 +23,43 @@ def check_keyup_event(event,ship,Gameset,screen,bullets):
 	   elif event.key==pygame.K_LEFT:
 	  		  ship.keep_left_moving=False	
 	   elif event.key==pygame.K_SPACE:
-	   	    Gameset.bullet_keepnew=False		    		  
+	   	    Gameset.bullet_keepnew=False
+	   	    newBullet=Bullet(Gameset,screen,ship)
+	   	    bullets.add(newBullet)		    		  
 
-def check_event(ship,Gameset,screen,bullets):
+#
+def check_button_click(Gameset,status,pbutton,mouse_x,mouse_y):
+	  if pbutton.rect.collidepoint(mouse_x,mouse_y)and(not status.game_active):
+	  	  status.game_active=True
+	  	  status.ships_left=Gameset.ship_limit
+
+#
+def check_event(ship,Gameset,screen,bullets,status,pbutton):
 	  #event to close pressing the red X button
 	  	for event in pygame.event.get():
-	  		  if event.type==pygame.QUIT:
+	  		  if event.type==pygame.MOUSEBUTTONDOWN:
+	  		  	  mouse_x,mouse_y=pygame.mouse.get_pos()
+	  		  	  check_button_click(Gameset,status,pbutton,mouse_x,mouse_y)
+	  		  	  
+	  		  elif event.type==pygame.QUIT:
 	  		  	  sys.exit() 
 	  		  elif event.type==pygame.KEYDOWN:
 	  		  	  #{
-	  		  	 	 check_keydown_event(event,ship,Gameset,screen,bullets) 
+	  		  	 	check_keydown_event(event,ship,Gameset,screen,bullets) 
 	  		  elif event.type==pygame.KEYUP:
-	  		  	   check_keyup_event(event,ship,Gameset,screen,bullets)			  
-              #}
+	  		  	  check_keyup_event(event,ship,Gameset,screen,bullets) 
+              
 #	  		  		    
-def update_screen(Gameset,screen,ship,bullets,aliens):        
+def update_screen(Gameset,screen,ship,bullets,aliens,status,pbutton):        
     screen.fill(Gameset.bgcolor)
     for bullet in bullets.sprites():
     	bullet.draw_bullet()
     ship.blitme()
     aliens.draw(screen)
+    
+    if not status.game_active:
+    	  pbutton.draw_button()
+    	  
     pygame.display.flip()
     
 
@@ -93,7 +110,11 @@ def check_fleet_edges(Gameset,aliens):
 
 #
 def ship_hit(Gameset,screen,aliens,ship,bullets,status):
-    status.ships_left-=1
+    
+    if(status.ships_left>0):
+        status.ships_left-=1
+    else:
+        status.game_active=False    
     
     aliens.empty()
     bullets.empty()
@@ -103,7 +124,7 @@ def ship_hit(Gameset,screen,aliens,ship,bullets,status):
     ship.center_ship()
     
     sleep(0.5)
-
+    
 #
 def check_alens_bottom(Gameset,screen,aliens,ship,bullets,status):
     screen_rect=screen.get_rect()
@@ -130,15 +151,17 @@ def renew_aliens(Gameset,screen,aliens,ship,bullets):
 #
 def update_bullet(bullets,Gameset,screen,ship,aliens):
     bullets.update()
-    #delete the miss bullet
-    for bullet in bullets.copy():
-	      if bullet.rect.bottom<=0:
-	  	      bullets.remove(bullet)
+    
 	  	  #print(len(bullets))
 	  #below is to check when to new a bullet	  
     if(Gameset.bullet_keepnew)and(Gameset.delay%100==0)and(len(bullets)<Gameset.bullet_allow):
     	  newBullet=Bullet(Gameset,screen,ship)
     	  bullets.add(newBullet) 
+    	  
+    #delete the miss bullet
+    for bullet in bullets.copy():
+	      if bullet.rect.bottom<=0:
+	  	      bullets.remove(bullet)	  
     	  
     check_bullet_alien_collisions(Gameset,screen,aliens,ship,bullets)
 
@@ -147,4 +170,11 @@ def check_bullet_alien_collisions(Gameset,screen,aliens,ship,bullets):
     #check if hit
     collisions=pygame.sprite.groupcollide(bullets,aliens,False,True)
     #renew the aliens
-    renew_aliens(Gameset,screen,aliens,ship,bullets)                                 		  	  
+    renew_aliens(Gameset,screen,aliens,ship,bullets) 
+    
+#
+def mouse_en_disable(status):
+	  if(status.game_active):
+	  	  pygame.mouse.set_visible(False)
+	  else:
+	  	  pygame.mouse.set_visible(True)	                                      		  	  
