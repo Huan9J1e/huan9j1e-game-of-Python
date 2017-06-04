@@ -1,12 +1,19 @@
+
+#coding=utf-8
+
 import sys
 from time import sleep
 
 
 import pygame
 
-from Game_Model import Bullet,Scoreboard
-
-from Game_Model import GameSetting,Ship,Alien,GameStatus,Button
+#ÖÐÎÄ
+from bullet import Bullet
+from ship import Ship
+from alien import Alien
+from button import Button
+from scoreboard import Scoreboard,GameStatus
+from Game_Model import GameSetting
 import Game_Function as gf
 from pygame.sprite import Group
 
@@ -18,12 +25,15 @@ def rungame():
 	  screen=pygame.display.set_mode(
 	    (gameset.screenW,gameset.screenH))
 	  pygame.display.set_caption('huan9j1e Game')
+	  image_bg=pygame.image.load('image/image_bg1.bmp')
 	  
 	  ship=Ship(screen,gameset)
 	  
-	  gameset.bullet_w=100
+	  gameset.bullet_w=5
 	  gameset.bullet_h=5
 	  gameset.bullet_speed=1
+	  gameset.ship_type=1
+	  gameset.bullet_keepnew=True
 	  bullets=Group()
 	  
 	  gameset.alien_speed=5
@@ -37,7 +47,7 @@ def rungame():
 	  pbutton=Button(gameset,screen,"Play")
 	  
 	  scoreb=Scoreboard(gameset,screen,status)
-	  
+	              
 	  while True:
 	  	gf.check_event(ship,gameset,screen,bullets,status,pbutton,scoreb)
 	  
@@ -57,7 +67,7 @@ def rungame():
 	  	        gameset.delay=0 
 	  	        
 	  	gf.mouse_en_disable(status)
-	  	gf.update_screen(gameset,screen,ship,bullets,
+	  	gf.update_screen(image_bg,gameset,screen,ship,bullets,
 	  	    aliens,status,pbutton,scoreb)
 
 rungame()	  		  	  

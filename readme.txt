@@ -5,3 +5,11 @@
 1. Pgame.py主程序
 2. checkPIP.CMD安装Pgame库需要PIP，检查是否安装
 3. installpygame.cmd安装Pygame库
+
+
+游戏规则：
+1. 按键
+方向键为方向
+S ：开始
+q : 关闭游戏
+p : 暂停游戏

@@ -1,9 +1,11 @@
+#coding=utf-8
 import sys
 from time import sleep
 
 import pygame
 
-from Game_Model import Bullet,Alien
+from bullet import Bullet
+from alien import Alien
 
 
 def game_init(status,scoreb,gameset):
@@ -18,8 +20,9 @@ def check_keydown_event(event,ship,gameset,screen,bullets,status,scoreb):
 	  		  ship.keep_right_moving=True  
 	   elif event.key==pygame.K_LEFT:
 	  		  ship.keep_left_moving=True
-	   elif event.key==pygame.K_SPACE:
-	   	    gameset.bullet_keepnew=True
+	   #改为自动发出子弹		  
+	   #elif event.key==pygame.K_SPACE:
+	   #	    gameset.bullet_keepnew=True    
 	   elif event.key==pygame.K_q:
 	        sys.exit()
 	   elif event.key==pygame.K_s:
@@ -28,7 +31,12 @@ def check_keydown_event(event,ship,gameset,screen,bullets,status,scoreb):
 	   elif event.key==pygame.K_UP:
 	   	    ship.keep_up_moving=True    	
 	   elif event.key==pygame.K_DOWN:
-	   	    ship.keep_down_moving=True	         	    
+	   	    ship.keep_down_moving=True	
+	   elif event.key==pygame.K_p:
+	   	    if(status.game_active):
+	   	        status.game_active=False
+	   	    else:
+	   	        status.game_active=True    	             	    
 	   	    
 	   	   	  	
 
@@ -68,10 +76,18 @@ def check_event(ship,gameset,screen,bullets,status,pbutton,scoreb):
 	  		  	 	check_keydown_event(event,ship,gameset,screen,bullets,status,scoreb) 
 	  		  elif event.type==pygame.KEYUP:
 	  		  	  check_keyup_event(event,ship,gameset,screen,bullets)	   
+
+
+#
+def update_image_bg(screen,image_bg):
+    
+    screen.blit(image_bg,(0,0))
               
 #	  		  		    
-def update_screen(gameset,screen,ship,bullets,aliens,status,pbutton,scoreb):        
+def update_screen(image_bg,gameset,screen,ship,bullets,aliens,status,pbutton,scoreb):        
     screen.fill(gameset.bgcolor)
+    #update_image_bg(screen,image_bg)
+    
     for bullet in bullets.sprites():
     	bullet.draw_bullet()
     ship.blitme()
@@ -179,6 +195,15 @@ def update_bullet(bullets,gameset,screen,ship,aliens,scoreb,status):
     if(gameset.bullet_keepnew)and(gameset.delay%100==0)and(len(bullets)<gameset.bullet_allow):
     	  newBullet=Bullet(gameset,screen,ship)
     	  bullets.add(newBullet) 
+    	  
+    	  #2fly类型增加2个子弹
+    	  if(gameset.ship_type==1):
+    	      gameset.bullet_deltax=20
+    	      newBullet=Bullet(gameset,screen,ship)
+    	      bullets.add(newBullet)
+    	      gameset.bullet_deltax=-20
+    	      newBullet=Bullet(gameset,screen,ship)
+    	      bullets.add(newBullet)
     	  
     #delete the miss bullet
     for bullet in bullets.copy():
